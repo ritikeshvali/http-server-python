@@ -1,5 +1,6 @@
 # Uncomment this to pass the first stage
 # import socket
+import socket
 
 
 def main():
@@ -10,6 +11,8 @@ def main():
     #
     # server_socket = socket.create_server(("localhost", 4221), reuse_port=True)
     # server_socket.accept() # wait for client
+    server_socket = socket.create_server(("localhost", 4221), reuse_port=True)
+    server_socket.accept()
 
 
 if __name__ == "__main__":
