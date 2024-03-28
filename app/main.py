@@ -3,7 +3,7 @@ import re
 import threading
 
 def http_response(conn):
-    data: bytes = conn.recv(1024).decode()
+    data: bytes = conn.recv(2048).decode()
     lines = data.split("\r\n")
 
     path = lines[0].split(" ")[1]
