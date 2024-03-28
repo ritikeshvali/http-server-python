@@ -9,6 +9,11 @@ def http_response(conn, addr):
     path = lines[0].split(" ")[1]
     response_body = path.split('/')[-1]
 
+    if path == '/':
+        conn.send(b"HTTP/1.1 200 OK\r\n\r\n")
+    else:
+        conn.send(b"HTTP/1.1 404 Not Found\r\n\r\n")
+
     response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Lenght: {len(response_body)}\r\n\r\n{response_body}"""
     conn.send(response.encode())
     conn.close()
