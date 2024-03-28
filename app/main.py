@@ -45,7 +45,7 @@ def http_response(conn, addr, directory=None):
             response += f"Content-Length: {len(data)}\r\n\r\n"
             response += data
         else:
-            response += "HTTP/1.1 404 Not Found\r\n"
+            response = "HTTP/1.1 404 Not Found\r\n"
             response += "Content-Type: text/plain\r\n"
             response += f"Content-Length: {len(data)}\r\n\r\n"
             response += data
