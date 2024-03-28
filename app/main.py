@@ -3,7 +3,7 @@ import re
 import threading
 
 def http_response(conn):
-    data: bytes = conn.recv(2048).decode()
+    data: bytes = conn.recv(1024).decode()
     lines = data.split("\r\n")
 
     path = lines[0].split(" ")[1]
@@ -35,9 +35,10 @@ def main():
 
     server_socket = socket.create_server(("localhost", 4221), reuse_port=True)
     
-    client_socket, client_address = server_socket.accept()
-    print(f"Received a connection from {client_address}")
-    threading.Thread(target=http_response, args=[client_socket]).start()
+    while True:
+        client_socket, client_address = server_socket.accept()
+        print(f"Received a connection from {client_address}")
+        threading.Thread(target=http_response, args=[client_socket]).start()
 
 if __name__ == "__main__":
     main()
