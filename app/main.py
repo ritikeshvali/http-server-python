@@ -9,8 +9,6 @@ def http_response(conn):
     path = lines[0].split(" ")[1]
     echo_keyword = path.split('/')[1]
 
-    user_agent = lines[2].split(" ")[1]
-
     if path == '/':
         conn.send(b"HTTP/1.1 200 OK\r\n\r\n")
     elif echo_keyword == 'echo':
@@ -22,6 +20,7 @@ def http_response(conn):
         response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(response_body)}\r\n\r\n{response_body}"
         conn.send(response.encode())
     elif echo_keyword == 'user-agent':
+        user_agent = lines[2].split(" ")[1]
         response_body = user_agent
         response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(response_body)}\r\n\r\n{response_body}"
         conn.send(response.encode())
