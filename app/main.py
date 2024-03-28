@@ -8,18 +8,24 @@ def http_response(conn, addr):
     path = lines[0].split(" ")[1]
     echo_keyword = path.split('/')[1]
 
+    user_agent = lines[2].split(" ")[1]
+
     if path == '/':
         conn.send(b"HTTP/1.1 200 OK\r\n\r\n")
-    elif echo_keyword != 'echo':
-        conn.send(b"HTTP/1.1 404 Not Found\r\n\r\n")
-    else:
+    elif echo_keyword == 'echo':
         pattern = r"/echo/(.*)"
         match = re.search(pattern, path)
         response_body = ""
         if match:
             response_body = match.group(1)
-        response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(response_body)}\r\n\r\n{response_body}"""
+        response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(response_body)}\r\n\r\n{response_body}"
         conn.send(response.encode())
+    elif echo_keyword == 'user-agent':
+        response_body = user_agent
+        response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(response_body)}\r\n\r\n{response_body}"
+        conn.send(response.encode())
+    else:
+        conn.send(b"HTTP/1.1 404 Not Found\r\n\r\n")
     conn.close()
 
 def main():
