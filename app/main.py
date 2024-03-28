@@ -1,22 +1,25 @@
-# Uncomment this to pass the first stage
-# import socket
 import socket
+import re
 
 def http_response(conn, addr):
     data: bytes = conn.recv(1024).decode()
     lines = data.split("\r\n")
 
     path = lines[0].split(" ")[1]
-    response_body = path.split('/')[-1]
     echo_keyword = path.split('/')[1]
 
     if path == '/':
         conn.send(b"HTTP/1.1 200 OK\r\n\r\n")
     elif echo_keyword != 'echo':
         conn.send(b"HTTP/1.1 404 Not Found\r\n\r\n")
-
-    response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Lenght: {len(response_body)}\r\n\r\n{response_body}"""
-    conn.send(response.encode())
+    else:
+        pattern = r"/echo/(.*)"
+        match = re.search(pattern, path)
+        response_body = ""
+        if match:
+            response_body = match.group(1)
+        response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Lenght: {len(response_body)}\r\n\r\n{response_body}"""
+        conn.send(response.encode())
     conn.close()
 
 def main():
