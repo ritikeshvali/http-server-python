@@ -2,7 +2,7 @@ import socket
 import re
 import threading
 
-def http_response(conn, addr):
+def http_response(conn):
     data: bytes = conn.recv(1024).decode()
     lines = data.split("\r\n")
 
@@ -37,7 +37,7 @@ def main():
     
     client_socket, client_address = server_socket.accept()
     print(f"Received a connection from {client_address}")
-    threading.Thread(target=http_response, args=[client_socket, client_address]).start()
+    threading.Thread(target=http_response, args=[client_socket]).start()
 
 if __name__ == "__main__":
     main()
