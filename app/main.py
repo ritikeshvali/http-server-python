@@ -8,8 +8,10 @@ def http_response(conn, addr, directory=None):
     data: bytes = conn.recv(1024).decode()
     lines = data.split("\r\n")
 
+    method = lines[0].split(" ")[0]
     path = lines[0].split(" ")[1]
     echo_keyword = path.split('/')[1]
+    body = lines[-1]
 
     if path == '/':
         conn.send(b"HTTP/1.1 200 OK\r\n\r\n")
@@ -34,22 +36,35 @@ def http_response(conn, addr, directory=None):
             filename = match.group(1)
         
         data = "no file"
-        if filename in os.listdir(directory):
+        if method == "POST":
             filepath = os.path.join(directory, filename)
-            file_object = open(filepath)
-            data = file_object.read()
+            file_object = open(filepath, "w")
+            file_object.write(body)
             file_object.close()
 
-            response = "HTTP/1.1 200 OK\r\n"
-            response += "Content-Type: application/octet-stream\r\n"
-            response += f"Content-Length: {len(data)}\r\n\r\n"
-            response += data
-        else:
-            response = "HTTP/1.1 404 Not Found\r\n"
+            data = "file created"
+            response = "HTTP/1.1 201 Created\r\n"
             response += "Content-Type: text/plain\r\n"
             response += f"Content-Length: {len(data)}\r\n\r\n"
             response += data
-        conn.send(response.encode())
+            conn.send(response.encode())
+        else:
+            if filename in os.listdir(directory):
+                filepath = os.path.join(directory, filename)
+                file_object = open(filepath)
+                data = file_object.read()
+                file_object.close()
+
+                response = "HTTP/1.1 200 OK\r\n"
+                response += "Content-Type: application/octet-stream\r\n"
+                response += f"Content-Length: {len(data)}\r\n\r\n"
+                response += data
+            else:
+                response = "HTTP/1.1 404 Not Found\r\n"
+                response += "Content-Type: text/plain\r\n"
+                response += f"Content-Length: {len(data)}\r\n\r\n"
+                response += data
+            conn.send(response.encode())
     else:
         conn.send(b"HTTP/1.1 404 Not Found\r\n\r\n")
     conn.close()
