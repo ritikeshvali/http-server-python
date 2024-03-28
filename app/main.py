@@ -18,7 +18,7 @@ def http_response(conn, addr):
         response_body = ""
         if match:
             response_body = match.group(1)
-        response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Lenght: {len(response_body)}\r\n\r\n{response_body}"""
+        response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(response_body)}\r\n\r\n{response_body}"""
         conn.send(response.encode())
     conn.close()
 
