@@ -49,6 +49,7 @@ def http_response(conn, addr, directory=None):
             response += "Content-Type: text/plain\r\n"
             response += f"Content-Length: {len(data)}\r\n\r\n"
             response += data
+        conn.send(response.encode())
     else:
         conn.send(b"HTTP/1.1 404 Not Found\r\n\r\n")
     conn.close()
