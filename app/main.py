@@ -1,8 +1,10 @@
 import socket
 import re
 import threading
+import sys
+import os
 
-def http_response(conn):
+def http_response(conn, addr, directory=None):
     data: bytes = conn.recv(1024).decode()
     lines = data.split("\r\n")
 
@@ -24,11 +26,34 @@ def http_response(conn):
         response_body = user_agent
         response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(response_body)}\r\n\r\n{response_body}"
         conn.send(response.encode())
+    elif echo_keyword == 'files':
+        pattern = r"/files/(.*)"
+        match = re.search(pattern, path)
+        filename = ""
+        if match:
+            filename = match.group(1)
+        
+        data = "no file"
+        if filename in os.listdir(directory):
+            filepath = os.path.join(directory, filename)
+            file_object = open(filepath)
+            data = file_object.read()
+            file_object.close()
+
+            response = "HTTP/1.1 200 OK\r\n"
+            response += "Content-Type: application/octet-stream\r\n"
+            response += f"Content-Length: {len(data)}\r\n\r\n"
+            response += data
+        else:
+            response += "HTTP/1.1 404 Not Found\r\n"
+            response += "Content-Type: text/plain\r\n"
+            response += f"Content-Length: {len(data)}\r\n\r\n"
+            response += data
     else:
         conn.send(b"HTTP/1.1 404 Not Found\r\n\r\n")
     conn.close()
 
-def main():
+def main(directory=None):
 
     print("Logs from your program will appear here!")
 
@@ -37,7 +62,11 @@ def main():
     while True:
         client_socket, client_address = server_socket.accept()
         print(f"Received a connection from {client_address}")
-        threading.Thread(target=http_response, args=[client_socket]).start()
+        threading.Thread(target=http_response, args=[client_socket, client_address, directory]).start()
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) == 3 and sys.argv[1] == "--directory":
+        directory = sys.argv[2]
+        main(directory)
+    else:
+        main()
