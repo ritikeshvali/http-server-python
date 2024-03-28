@@ -27,7 +27,6 @@ def http_response(conn, addr):
         conn.send(response.encode())
     else:
         conn.send(b"HTTP/1.1 404 Not Found\r\n\r\n")
-    conn.close()
 
 def main():
 
