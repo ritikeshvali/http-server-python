@@ -1,5 +1,6 @@
 import socket
 import re
+import threading
 
 def http_response(conn, addr):
     data: bytes = conn.recv(1024).decode()
@@ -36,8 +37,7 @@ def main():
     
     client_socket, client_address = server_socket.accept()
     print(f"Received a connection from {client_address}")
-    http_response(client_socket, client_address)
-
+    threading.Thread(target=http_response, args=[client_socket, client_address]).start()
 
 if __name__ == "__main__":
     main()
