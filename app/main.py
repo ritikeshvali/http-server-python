@@ -4,6 +4,23 @@ import threading
 import sys
 import os
 
+# Standard Http Request:
+# GET /index.html HTTP/1.1
+# Host: localhost:4221
+# User-Agent: curl/7.64.1
+
+# Standard Http Response:
+# HTTP/1.1 200 OK
+# Content-Type: text/plain
+# Content-Length: 3
+#
+# abc
+
+# 200 OK Response:
+# HTTP/1.1 200 OK\r\n\r\n
+
+# 404 Not Found Response:
+# HTTP/1.1 404 Not Found
 def http_response(conn, addr, directory=None):
     data: bytes = conn.recv(1024).decode()
     lines = data.split("\r\n")
